@@ -6,6 +6,7 @@ typedef struct {
     
     String address;
     String command;
+    String protocol;
 
 } InfraredFormatReader;
 

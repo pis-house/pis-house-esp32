@@ -1,25 +1,53 @@
-// ESP32のTX/RXピンを任意のGPIOに再定義
-const int RX_PIN = 16; // GPIO 16 (未使用ピン)
-const int TX_PIN = 17; // GPIO 17 (未使用ピン)
-const long BAUD_RATE = 115200;
+// #include <IRremote.hpp>  // IRremoteライブラリ
+// #define IR_RECEIVE_PIN 13 // GPIOピン番号を定義
+
+// void setup() {
+//   Serial.begin(115200);  // シリアル通信の初期化
+//   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+  
+//   delay(1000);
+  
+//   Serial.println("Setup Complete");
+// }
+
+// void loop() {
+//   if (IrReceiver.decode()) {  // 信号を受信したら
+//     Serial.print("Received Raw Data: ");
+//     Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);  // 生のデータを16進数で表示
+
+//     IrReceiver.printIRResultShort(&Serial);  // 受信したデータの簡潔な概要を表示
+//     IrReceiver.printIRSendUsage(&Serial);    // 受信した信号を送信するためのコードを表示
+
+//     IrReceiver.resume();  // 次の信号を受信できるようにする
+//   }
+// }
+
+
+#include <Arduino.h>
+#include <IRremote.hpp>
+
+// 送信ピン（ESP32や使用するボードに合わせて変更してください）
+#define IR_SEND_PIN 4
 
 void setup() {
-  // ラズパイへの送信に使用するUART2を開始
-  Serial2.begin(BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
-  Serial.println("ESP32 Serial2 Initialized.");
+    Serial.begin(115200);
+    IrSender.begin(IR_SEND_PIN);
+    Serial.println(F("Setup Complete."));
 }
 
 void loop() {
-  // 送信するデータを作成（例: センサー値や状態）
-  int sensor_value = analogRead(A0); // 例としてA0ピンの値を読む
-  String data_to_send = "SensorValue:" + String(sensor_value);
-  
-  // データを送信し、末尾に改行コードを付ける（ラズパイ側で区切りやすいように）
-  Serial2.print(data_to_send);
-  Serial2.print("\n");
-  
-  Serial.print("Sent to RPi: ");
-  Serial.println(data_to_send);
+    Serial.println(F("Sending IR signal (0x353C09522C)..."));
 
-  delay(1000); // 1秒ごとに送信
+    IrSender.sendPulseDistanceWidth(
+      38,
+      3500, 1750,
+      400, 1350,
+      400, 450,
+      0x353C09522CULL,
+      40,
+      PROTOCOL_IS_LSB_FIRST,
+      0, 0
+    );
+
+    delay(1000);
 }

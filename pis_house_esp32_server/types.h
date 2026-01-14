@@ -6,6 +6,7 @@ typedef struct {
     
     String address;
     String command;
+    String custom_process;
     String protocol;
 
 } InfraredFormatReader;
@@ -20,11 +21,11 @@ typedef struct {
 
 // ステータス送信データ構造体
 typedef struct {
-    const char* TYPE = "status-value";
+    const char* TYPE = "ble-presence";
     
-    bool status_value;
+    bool ble_presence;
 
-} StatusValueFormatSender;
+} BLEPresenceFormatSender;
 
 // 設定ファイル読み込み構造体
 typedef struct {
@@ -44,3 +45,29 @@ typedef struct {
   WiFiUDP udp;
   char packet_buffer[255];
 } UdpConfig;
+
+struct RssiResult {
+  bool matched;
+  int rawRssi;
+  float avgRssi;
+  float estCm;
+  int samples;
+};
+
+class RssiProcessor {
+    private:
+        int rssiBuf[8];  // static 変数からメンバ変数へ
+        int bufIndex = 0;    // static 変数からメンバ変数へ
+        int sampleCount = 0; // static 変数からメンバ変数へ
+        
+        float estimateDistanceCm(float avgRssi, float txPowerDbm, float pathLossExp);
+
+    public:
+        RssiProcessor() { initBuffer(); } // コンストラクタで初期化
+        void initBuffer();
+  
+        RssiResult processAdvertisedDeviceForRssi(BLEAdvertisedDevice &dev,
+            const String &expectedMac,
+            float txPowerDbm = -65.0,
+            float pathLossExp = 3.0);
+};

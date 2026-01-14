@@ -50,5 +50,5 @@ Control Server との通信プロトコル定義です。
 | :--- | :--- | :--- |
 | **`InfraredFormatReader`** | **受信**: 赤外線送信指令 | `address`, `command`, `protocol` (NEC等) |
 | **`RssiFormatSender`** | **送信**: 電波強度 | `rssi` (float) |
-| **`StatusValueFormatSender`** | **送信**: ステータス通知 | `status_value` (bool) <br>※主に在室検知(BLE Presence)用 |
+| **`BLEPresenceFormatSender`** | **送信**: ステータス通知 | `ble-presence` (bool) <br>※主に在室検知(BLE Presence)用 |
 | **`SettingFile`** | **設定**: 内部設定保持 | `ssid`, `password`, `ip`, `gateway`, `remote_ip` (通知先IP) |
